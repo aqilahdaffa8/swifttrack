@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-// Hapus import font_awesome_flutter
+import 'package:swift_track/features/tracking/presentation/screens/live_tracking_screen.dart';
+import 'package:swift_track/core/theme/app_theme.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -116,10 +117,21 @@ class DummyDashboardScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Dashboard')),
       body: Center(
-        child: Text(
-          'Aplikasi Berjalan Sempurna!\nSiap untuk Tahap 2.',
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleLarge,
+        child: ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LiveTrackingScreen()),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppTheme.accentOrange,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          icon: const Icon(Icons.map),
+          label: const Text('Buka Live Tracking', style: TextStyle(fontSize: 16)),
         ),
       ),
     );
