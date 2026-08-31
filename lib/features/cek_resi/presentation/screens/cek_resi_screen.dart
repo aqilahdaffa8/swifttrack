@@ -10,6 +10,7 @@ class CekResiScreen extends StatelessWidget {
   void _showCourierSelector(BuildContext context, CekResiProvider provider) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -23,22 +24,29 @@ class CekResiScreen extends StatelessWidget {
                 width: 40,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: Colors.grey.shade400,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 'Pilih Ekspedisi',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18, 
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
               const SizedBox(height: 16),
               ...provider.availableCouriers.map((courier) {
                 final isSelected = provider.selectedCourier.code == courier.code;
                 return ListTile(
-                  title: Text(courier.name),
+                  title: Text(
+                    courier.name,
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                  ),
                   trailing: isSelected 
-                      ? const Icon(Icons.check_circle, color: AppTheme.primaryColor) 
+                      ? const Icon(Icons.check_circle, color: AppTheme.accentOrange) 
                       : null,
                   onTap: () {
                     provider.setCourier(courier);
@@ -55,6 +63,8 @@ class CekResiScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return ChangeNotifierProvider(
       create: (_) => CekResiProvider(),
       child: Scaffold(
@@ -65,14 +75,14 @@ class CekResiScreen extends StatelessWidget {
           builder: (context, provider, child) {
             return Column(
               children: [
-                // Bagian Header Input
+                // Bagian Header Input (Sekarang Adaptive untuk Light/Dark Mode)
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 10,
                         offset: const Offset(0, 5),
                       )
@@ -86,7 +96,7 @@ class CekResiScreen extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
+                            border: Border.all(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
@@ -94,9 +104,16 @@ class CekResiScreen extends StatelessWidget {
                             children: [
                               Text(
                                 provider.selectedCourier.name,
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                  fontSize: 16, 
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                ),
                               ),
-                              const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                              Icon(
+                                Icons.arrow_drop_down, 
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                             ],
                           ),
                         ),
@@ -108,10 +125,12 @@ class CekResiScreen extends StatelessWidget {
                           Expanded(
                             child: TextField(
                               onChanged: provider.setAwb,
+                              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                               decoration: InputDecoration(
                                 hintText: 'Masukkan Nomor Resi...',
+                                hintStyle: const TextStyle(color: Colors.grey),
                                 filled: true,
-                                fillColor: Colors.grey.shade100,
+                                fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide.none,
@@ -149,7 +168,7 @@ class CekResiScreen extends StatelessWidget {
                 Expanded(
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 500),
-                    child: _buildResultArea(provider),
+                    child: _buildResultArea(context, provider),
                   ),
                 ),
               ],
@@ -160,7 +179,7 @@ class CekResiScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildResultArea(CekResiProvider provider) {
+  Widget _buildResultArea(BuildContext context, CekResiProvider provider) {
     if (provider.isLoading) {
       return const Center(
         key: ValueKey('loading'),
@@ -240,7 +259,6 @@ class _TrackingTimeline extends StatelessWidget {
         final history = result.history[historyIndex];
         final isFirst = historyIndex == 0; // Item paling atas (Terbaru)
 
-        // TweenAnimationBuilder untuk efek berjenjang (staggered fade-in)
         return TweenAnimationBuilder<double>(
           tween: Tween(begin: 0.0, end: 1.0),
           duration: Duration(milliseconds: 400 + (historyIndex * 100)),
@@ -260,9 +278,9 @@ class _TrackingTimeline extends StatelessWidget {
                           width: 16,
                           height: 16,
                           decoration: BoxDecoration(
-                            color: isFirst ? AppTheme.accentOrange : Colors.grey.shade400,
+                            color: isFirst ? AppTheme.accentOrange : Colors.grey.shade500,
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 3),
+                            border: Border.all(color: Theme.of(context).colorScheme.surface, width: 3),
                             boxShadow: [
                               if (isFirst)
                                 BoxShadow(
@@ -276,7 +294,7 @@ class _TrackingTimeline extends StatelessWidget {
                           Container(
                             width: 2,
                             height: 60,
-                            color: Colors.grey.shade300,
+                            color: Colors.grey.shade600,
                           ),
                       ],
                     ),
@@ -301,7 +319,7 @@ class _TrackingTimeline extends StatelessWidget {
                               history.desc,
                               style: TextStyle(
                                 fontSize: 14,
-                                color: AppTheme.pureBlack,
+                                color: Theme.of(context).colorScheme.onSurface, // Teks yang aman di Dark Mode
                                 fontWeight: isFirst ? FontWeight.bold : FontWeight.normal,
                               ),
                             ),
