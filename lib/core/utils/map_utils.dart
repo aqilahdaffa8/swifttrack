@@ -1,37 +1,47 @@
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class MapUtils {
-  /// Mengambil daftar koordinat (Polyline) antara 2 titik (Origin ke Destination)
-  /// Catatan: Membutuhkan API Key Google Maps yang memiliki akses ke Directions API
-  static Future<List<LatLng>> getRoutePolyline({
+  /// Mengambil rute jalan nyata (Polyline) menggunakan API gratis dari OSRM.
+  /// Tidak perlu API Key dan tidak ada batasan tagihan!
+  static Future<List<LatLng>> getRealRouteOSRM({
     required LatLng origin,
     required LatLng destination,
-    required String googleApiKey,
   }) async {
-    List<LatLng> polylineCoordinates = [];
-    PolylinePoints polylinePoints = PolylinePoints();
+    try {
+      final dio = Dio();
+      // Format URL OSRM: longitude,latitude (berbeda dengan format standar lat,lon)
+      final String url = 'http://router.project-osrm.org/route/v1/driving/'
+          '${origin.longitude},${origin.latitude};'
+          '${destination.longitude},${destination.latitude}'
+          '?geometries=geojson';
 
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      googleApiKey: googleApiKey,
-      request: PolylineRequest(
-        origin: PointLatLng(origin.latitude, origin.longitude),
-        destination: PointLatLng(destination.latitude, destination.longitude),
-        mode: TravelMode.driving,
-      ),
-    );
+      final response = await dio.get(url);
 
-    if (result.points.isNotEmpty) {
-      for (var point in result.points) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final List routes = data['routes'];
+        
+        if (routes.isNotEmpty) {
+          // Mengambil array koordinat dari GeoJSON
+          final List coordinates = routes[0]['geometry']['coordinates'];
+          
+          // Mapping dari array [longitude, latitude] ke objek LatLng(latitude, longitude)
+          return coordinates.map((coord) {
+            return LatLng(coord[1].toDouble(), coord[0].toDouble());
+          }).toList();
+        }
       }
+      return [];
+    } catch (e) {
+      // Return list kosong jika gagal (misal tidak ada koneksi)
+      return [];
     }
-    return polylineCoordinates;
   }
 
-  /// Menghitung batas (Bounds) agar kamera Maps bisa melakukan Auto-Zoom
-  /// dan memuat seluruh garis rute di dalam layar
+  /// Menghitung batas kotak (Bounds) agar kamera bisa Auto-Zoom
+  /// dan memuat seluruh koordinat rute di dalam layar (Versi flutter_map)
   static LatLngBounds boundsFromLatLngList(List<LatLng> list) {
     assert(list.isNotEmpty);
     double? x0, x1, y0, y1;
@@ -47,16 +57,8 @@ class MapUtils {
       }
     }
     return LatLngBounds(
-      northeast: LatLng(x1!, y1!),
-      southwest: LatLng(x0!, y0!),
+      LatLng(x0!, y0!), // Titik Barat Daya (SouthWest)
+      LatLng(x1!, y1!), // Titik Timur Laut (NorthEast)
     );
-  }
-
-  /// Mendapatkan custom icon bawaan Google Maps dengan warna tertentu
-  /// (Sebagai fallback sebelum kita menggunakan gambar asset custom)
-  static BitmapDescriptor getMarkerIcon(Color color) {
-    // Hue konversi dari Color untuk Marker bawaan Maps
-    double hue = HSLColor.fromColor(color).hue;
-    return BitmapDescriptor.defaultMarkerWithHue(hue);
   }
 }

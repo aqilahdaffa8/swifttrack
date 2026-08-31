@@ -11,13 +11,14 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.6
+  
   # State Management
   provider: ^6.1.2
   
-  # Maps & Location
-  google_maps_flutter: ^2.5.3
+  # 100% Free Maps & Location (OpenStreetMap)
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
   geolocator: ^11.0.0
-  flutter_polyline_points: ^2.0.0
   
   # Networking & Local Storage
   dio: ^5.4.1

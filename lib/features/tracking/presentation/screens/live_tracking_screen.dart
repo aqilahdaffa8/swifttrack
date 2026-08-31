@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import '../providers/tracking_provider.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -14,20 +15,26 @@ class LiveTrackingScreen extends StatelessWidget {
       child: Scaffold(
         body: Stack(
           children: [
-            // 1. Layer Peta Google Maps
+            // 1. Layer Peta OpenStreetMap
             Consumer<TrackingProvider>(
               builder: (context, provider, child) {
-                return GoogleMap(
-                  initialCameraPosition: const CameraPosition(
-                    target: LatLng(-7.001600, 107.545800), // Default Center
-                    zoom: 14.0,
+                return FlutterMap(
+                  mapController: provider.mapController,
+                  options: MapOptions(
+                    initialCenter: const LatLng(-7.001600, 107.545800), // Default Center
+                    initialZoom: 14.0,
+                    onMapReady: () {
+                      provider.initializeMap();
+                    },
                   ),
-                  onMapCreated: provider.onMapCreated,
-                  markers: provider.markers,
-                  polylines: provider.polylines,
-                  zoomControlsEnabled: false,
-                  myLocationButtonEnabled: false,
-                  mapToolbarEnabled: false,
+                  children: [
+                    TileLayer(
+                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.example.swift_track', // Standar protokol OSM
+                    ),
+                    PolylineLayer(polylines: provider.polylines),
+                    MarkerLayer(markers: provider.markers),
+                  ],
                 );
               },
             ),
@@ -76,7 +83,6 @@ class LiveTrackingScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Drag Indicator
                         Center(
                           child: Container(
                             width: 40,
@@ -88,8 +94,6 @@ class LiveTrackingScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        
-                        // Status Resi
                         Row(
                           children: [
                             Container(
@@ -133,8 +137,6 @@ class LiveTrackingScreen extends StatelessWidget {
                         const SizedBox(height: 20),
                         const Divider(),
                         const SizedBox(height: 10),
-                        
-                        // Profil Kurir
                         Row(
                           children: [
                             CircleAvatar(
