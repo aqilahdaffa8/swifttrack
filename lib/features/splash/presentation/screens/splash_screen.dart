@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:swift_track/features/tracking/presentation/screens/live_tracking_screen.dart';
 import 'package:swift_track/core/theme/app_theme.dart';
+import 'package:swift_track/features/cek_resi/presentation/screens/cek_resi_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -117,21 +118,43 @@ class DummyDashboardScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Dashboard')),
       body: Center(
-        child: ElevatedButton.icon(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const LiveTrackingScreen()),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.accentOrange,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-          icon: const Icon(Icons.map),
-          label: const Text('Buka Live Tracking', style: TextStyle(fontSize: 16)),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LiveTrackingScreen()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              icon: const Icon(Icons.map),
+              label: const Text('Buka Live Tracking', style: TextStyle(fontSize: 16)),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CekResiScreen()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.accentOrange,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              icon: const Icon(Icons.search),
+              label: const Text('Cek Resi Pengiriman', style: TextStyle(fontSize: 16)),
+            ),
+          ],
         ),
       ),
     );
