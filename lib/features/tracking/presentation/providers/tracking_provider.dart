@@ -97,7 +97,11 @@ class TrackingProvider extends ChangeNotifier {
               color: Colors.white,
               shape: BoxShape.circle,
               boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 10)
+                // DIPERBAIKI: Menggunakan withValues
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3), 
+                  blurRadius: 10,
+                )
               ],
             ),
             child: const Icon(

@@ -52,7 +52,8 @@ class LiveTrackingScreen extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        // DIPERBAIKI: Menggunakan withValues
+                        color: Colors.black.withValues(alpha: 0.2),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       )
@@ -99,7 +100,8 @@ class LiveTrackingScreen extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
-                                color: AppTheme.accentOrange.withOpacity(0.15),
+                                // DIPERBAIKI: Menggunakan withValues
+                                color: AppTheme.accentOrange.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Row(
@@ -141,7 +143,8 @@ class LiveTrackingScreen extends StatelessWidget {
                           children: [
                             CircleAvatar(
                               radius: 24,
-                              backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                              // DIPERBAIKI: Menggunakan withValues
+                              backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                               child: const Icon(Icons.person, color: AppTheme.primaryColor),
                             ),
                             const SizedBox(width: 16),
